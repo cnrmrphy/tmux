@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 
-#author: Dane Williams
-#script for gathering current location and weather at location
-#script is then called in the dracula.tmux program
+fahrenheit=$1
 
-# test if rate limit hit
-# only testing last request because of redundancy
 load_request_params()
 {
 	
@@ -33,7 +29,11 @@ weather_information()
 }
 get_temp()
 {
-	weather_information | grep 'deg;F' | cut -d '&' -f 1
+	if $fahrenheit; then
+		echo $(weather_information | grep 'deg;F' | cut -d '&' -f 1)
+	else
+		echo $(( ($(weather_information | grep 'deg;F' | cut -d '&' -f 1) - 32) * 5 / 9 ))
+	fi
 }
 forecast_unicode() 
 {
@@ -57,7 +57,7 @@ forecast_unicode()
 display_weather()
 {
 	if [ $country = 'US' ]; then
-		echo "$(forecast_unicode)$(get_temp)°F"
+		echo "$(forecast_unicode)$(get_temp)° "
 	else
 		echo ''
 	fi
@@ -74,7 +74,7 @@ main()
 	fi
 	# process should be cancelled when session is killed
 	if ping -q -c 1 -W 1 ipinfo.io &>/dev/null; then
-		echo "$(display_weather) $city, $(get_region_code)"
+		echo "$(display_weather)$city, $(get_region_code)"
 	else
 		echo "Location Unavailable"
 	fi

@@ -8,12 +8,18 @@
 
 All instructions can be found at [draculatheme.com/tmux](https://draculatheme.com/tmux).
 
+## Configuration
+
+Configuration and options can be found at [draculatheme.com/tmux](https://draculatheme.com/tmux).
+
 ## Features
 
+* Support for powerline
 * Day, date, time, timezone
 * Current location based on network with temperature and forecast icon (if available)
 * Network connection status and SSID
 * Battery percentage and AC power connection status
+* CPU usage
 * Color code based on if prefix is active or not
 * List of windows with current window highlighted
 * When prefix is enabled smiley face turns from green to yellow
@@ -24,9 +30,6 @@ All instructions can be found at [draculatheme.com/tmux](https://draculatheme.co
 
 Compatible with macOS and Linux. Tested on tmux 3.0a
 
-## Options
-Customize the status bar by adding any of these lines to your .tmux.conf as desired:  
-Disable weather functionality: `set -g @dracula-show-weather false`  
 
 ## Team
 

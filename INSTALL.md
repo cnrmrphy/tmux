@@ -12,3 +12,16 @@ If you are a tpm user, you can install the theme and keep up to date by adding t
 2. Run tmux
 3. Use the tpm install command: `prefix + I` (default prefix is ctrl+b)
 
+#### Configuration
+
+Customize the status bar by adding any of these lines to your .tmux.conf as desired:  
+* Disable battery functionality: `set -g @dracula-show-battery false`
+* Disable network functionality: `set -g @dracula-show-network false`
+* Disable weather functionality: `set -g @dracula-show-weather false`
+* Switch from default fahrenheit to celsius: `set -g @dracula-show-fahrenheit false`
+* Enable powerline symbols: `set -g @dracula-show-powerline true`
+* Switch powerline symbols `set -g @dracula-show-left-sep ` for left and `set -g @dracula-show-right-sep ` for right symbol (can set any symbol you like as seperator)
+* Enable military time: `set -g @dracula-military-time true`
+* Switch the left smiley icon `set -g @dracula-show-left-icon session` it can accept `session`, `smiley`, `window`, or any character.
+* Enable high contrast pane border: `set -g @dracula-border-contrast true`
+* Enable cpu percentage: `set -g @dracula-cpu-percent true`
