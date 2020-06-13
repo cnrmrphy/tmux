@@ -12,13 +12,41 @@ get_tmux_option() {
 }
 
 default_config() {
-  tmux set-option -g status-left "#[bg=${green},fg=${dark_gray}]#{?client_prefix,#[bg=${yellow}],} ${left_icon}"
+  left_icon="☺ "
+  show_fahrenheit=true
 
+  $current_dir/sleep_weather.sh $show_fahrenheit &
+
+  # sets refresh interval to every 5 seconds
+  tmux set-option -g status-interval 5
+
+  # set clock to 12 hour by default
+  tmux set-option -g clock-mode-style 12
+
+  # set length 
+  tmux set-option -g status-left-length 100
+  tmux set-option -g status-right-length 100
+
+  # show border contrast by default
+  tmux set-option -g pane-active-border-style "fg=${light_purple}"
+  tmux set-option -g pane-border-style "fg=${gray}"
+
+  # message styling
+  tmux set-option -g message-style "bg=${gray},fg=${white}"
+
+  # status bar
+  tmux set-option -g status-style "bg=${gray},fg=${white}"
+
+
+  tmux set-option -g status-left "#[bg=${green},fg=${dark_gray}]#{?client_prefix,#[bg=${yellow}],} ${left_icon}"
   tmux set-option -g  status-right ""
 
   battery
   network
   weather
+  clock
+
+  tmux set-window-option -g window-status-current-format "#[fg=${white},bg=${dark_purple}] #I #W "
 }
 
 battery() {
@@ -92,7 +120,7 @@ main()
   
 
   # config_list=$(tmux show-option -gqv "@dracula-config-list")
-  # if !$config_list; then
+  # if [ -z $config_list ]; then
   #   default_config
   # fi
 
@@ -122,7 +150,7 @@ main()
       session)
           left_icon="#S ";;
       window)
-	  left_icon="#W ";;
+	        left_icon="#W ";;
       *)
           left_icon=$show_left_icon;;
   esac
