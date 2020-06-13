@@ -11,12 +11,73 @@ get_tmux_option() {
   fi
 }
 
+default_config() {
+  tmux set-option -g status-left "#[bg=${green},fg=${dark_gray}]#{?client_prefix,#[bg=${yellow}],} ${left_icon}"
+
+  tmux set-option -g  status-right ""
+
+  battery
+  network
+  weather
+}
+
+battery() {
+  tmux set-option -g  status-right "#[fg=${dark_gray},bg=${pink}] #($current_dir/battery.sh) "
+}
+
+cpu() {
+  tmux set-option -ga status-right "#[fg=${dark_gray},bg=${orange}] #($current_dir/cpu_info.sh) "
+}
+
+network() {
+  tmux set-option -ga status-right "#[fg=${dark_gray},bg=${cyan}] #($current_dir/network.sh) "
+}
+
+weather() {
+  tmux set-option -ga status-right "#[fg=${dark_gray},bg=${orange}] #(cat $current_dir/../data/weather.txt) "
+}
+
+military() {
+  tmux set-option -ga status-right "#[fg=${white},bg=${dark_purple}] %a %m/%d %R #(date +%Z) "
+}
+
+clock() {
+  tmux set-option -ga status-right "#[fg=${white},bg=${dark_purple}] %a %m/%d %I:%M %p #(date +%Z) "
+}
+
+battery_powerline() {
+  tmux set-option -g  status-right "#[fg=${pink},bg=${powerbg},nobold,nounderscore,noitalics] ${right_sep}#[fg=${dark_gray},bg=${pink}] #($current_dir/battery.sh)"
+  powerbg=${pink}
+}
+
+cpu_powerline() {
+  tmux set-option -ga status-right "#[fg=${orange},bg=${powerbg},nobold,nounderscore,noitalics] ${right_sep}#[fg=${dark_gray},bg=${orange}] #($current_dir/cpu_info.sh)"
+	powerbg=${orange}
+}
+
+network_powerline() {
+  tmux set-option -ga status-right "#[fg=${cyan},bg=${powerbg},nobold,nounderscore,noitalics] ${right_sep}#[fg=${dark_gray},bg=${cyan}] #($current_dir/network.sh)"
+  powerbg=${cyan}
+}
+
+weather_powerline() {
+  tmux set-option -ga status-right "#[fg=${orange},bg=${powerbg},nobold,nounderscore,noitalics] ${right_sep}#[fg=${dark_gray},bg=${orange}] #(cat $current_dir/../data/weather.txt)"
+  powerbg=${orange}
+}
+
+military_powerline() {
+  tmux set-option -ga status-right "#[fg=${dark_purple},bg=${powerbg},nobold,nounderscore,noitalics] ${right_sep}#[fg=${white},bg=${dark_purple}] %a %m/%d %R #(date +%Z) "
+}
+
+clock_powerline() {
+  tmux set-option -ga status-right "#[fg=${dark_purple},bg=${powerbg},nobold,nounderscore,noitalics] ${right_sep}#[fg=${white},bg=${dark_purple}] %a %m/%d %I:%M %p #(date +%Z) "
+}
 main()
 {
   # set current directory variable
   current_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-  # set configuration option variables
+  # set defaults for configuration option variables
   show_battery=$(get_tmux_option "@dracula-show-battery" true)
   show_network=$(get_tmux_option "@dracula-show-network" true)
   show_weather=$(get_tmux_option "@dracula-show-weather" true)
@@ -28,7 +89,17 @@ main()
   show_right_sep=$(get_tmux_option "@dracula-show-right-sep" )
   show_border_contrast=$(get_tmux_option "@dracula-border-contrast" false)
   show_cpu_percentage=$(get_tmux_option "@dracula-cpu-percent" false)
-  config_list=$(tmux show-option -gqv "@dracula-config-list")
+  
+
+  # config_list=$(tmux show-option -gqv "@dracula-config-list")
+  # if !$config_list; then
+  #   default_config
+  # fi
+
+  # for opt in $config_list
+  # do
+  #   echo $opt
+  # done 
 
   # Dracula Color Pallette
   white='#f8f8f2'
@@ -100,29 +171,25 @@ main()
       powerbg=${gray}
 
       if $show_battery; then # battery
-        tmux set-option -g  status-right "#[fg=${pink},bg=${powerbg},nobold,nounderscore,noitalics] ${right_sep}#[fg=${dark_gray},bg=${pink}] #($current_dir/battery.sh)"
-        powerbg=${pink}
+        battery_powerline
       fi
 
       if $show_cpu_percentage; then
-	 tmux set-option -ga status-right "#[fg=${orange},bg=${powerbg},nobold,nounderscore,noitalics] ${right_sep}#[fg=${dark_gray},bg=${orange}] #($current_dir/cpu_info.sh)"
-	 powerbg=${orange}
+        cpu_powerline
       fi
 
       if $show_network; then # network
-        tmux set-option -ga status-right "#[fg=${cyan},bg=${powerbg},nobold,nounderscore,noitalics] ${right_sep}#[fg=${dark_gray},bg=${cyan}] #($current_dir/network.sh)"
-        powerbg=${cyan}
+        network_powerline
       fi
 
       if $show_weather; then # weather
-        tmux set-option -ga status-right "#[fg=${orange},bg=${powerbg},nobold,nounderscore,noitalics] ${right_sep}#[fg=${dark_gray},bg=${orange}] #(cat $current_dir/../data/weather.txt)"
-        powerbg=${orange}
+        weather_powerline
       fi
 
       if $show_military; then # military time
-	tmux set-option -ga status-right "#[fg=${dark_purple},bg=${powerbg},nobold,nounderscore,noitalics] ${right_sep}#[fg=${white},bg=${dark_purple}] %a %m/%d %R #(date +%Z) "
+        military_powerline
       else
-	tmux set-option -ga status-right "#[fg=${dark_purple},bg=${powerbg},nobold,nounderscore,noitalics] ${right_sep}#[fg=${white},bg=${dark_purple}] %a %m/%d %I:%M %p #(date +%Z) "
+        clock_powerline
       fi
 
       tmux set-window-option -g window-status-current-format "#[fg=${gray},bg=${dark_purple}]${left_sep}#[fg=${white},bg=${dark_purple}] #I #W #[fg=${dark_purple},bg=${gray}]${left_sep}"
@@ -134,25 +201,25 @@ main()
     tmux set-option -g  status-right ""
 
       if $show_battery; then # battery
-        tmux set-option -g  status-right "#[fg=${dark_gray},bg=${pink}] #($current_dir/battery.sh) "
+        battery
       fi
 
       if $show_cpu_percentage; then
-	tmux set-option -ga status-right "#[fg=${dark_gray},bg=${orange}] #($current_dir/cpu_info.sh) "
+        cpu
       fi
 
       if $show_network; then # network
-        tmux set-option -ga status-right "#[fg=${dark_gray},bg=${cyan}] #($current_dir/network.sh) "
+        network
       fi
 
       if $show_weather; then # weather
-          tmux set-option -ga status-right "#[fg=${dark_gray},bg=${orange}] #(cat $current_dir/../data/weather.txt) "
+          weather
       fi
 
       if $show_military; then # military time
-	tmux set-option -ga status-right "#[fg=${white},bg=${dark_purple}] %a %m/%d %R #(date +%Z) "
+        military
       else
-	tmux set-option -ga status-right "#[fg=${white},bg=${dark_purple}] %a %m/%d %I:%M %p #(date +%Z) "
+        clock
       fi
 
       tmux set-window-option -g window-status-current-format "#[fg=${white},bg=${dark_purple}] #I #W "
